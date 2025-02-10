@@ -3,7 +3,7 @@
 ## 📝 Description
 A bash script that provides detailed memory usage statistics for running processes on Linux systems, displaying results in a user-friendly format with progress bars and memory units (KB, MB, GB).
 
-## 🎯 PSS vs Other Memory Metrics: A Quick Guide
+## 📌 PSS vs Other Memory Metrics: A Quick Guide
 PSS (Proportional Set Size) offers a more accurate view of memory usage compared to traditional metrics like RSS (Resident Set Size) and VSZ (Virtual Size). 📊
 
 The key advantage of PSS is its fair handling of shared memory. While RSS double-counts shared pages and VSZ includes unused memory, PSS divides shared memory proportionally among processes using it. 🔄
@@ -16,7 +16,7 @@ For a 30MB shared library used by 3 processes:
 - 
 This makes PSS ideal for:
 
-🎯 Accurate system memory monitoring
+✅ Accurate system memory monitoring
 🐳 Container resource management
 🔍 Memory leak detection
 📊 Application profiling
