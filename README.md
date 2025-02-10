@@ -17,9 +17,13 @@ For a 30MB shared library used by 3 processes:
 This makes PSS ideal for:
 
 ✅ Accurate system memory monitoring
+
 🐳 Container resource management
+
 🔍 Memory leak detection
+
 📊 Application profiling
+
 The total PSS across all processes equals actual physical memory usage, making it the most reliable metric for real-world memory management. 💡
 
 ## 🎯 Features
