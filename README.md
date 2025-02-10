@@ -58,6 +58,12 @@ process_name : memory_usage unit percentage% [progress_bar]
 TOTAL : total_memory_usage unit percentage% [total_progress_bar]
 ```
 ## ⚙️ Configuration
+Modify 15518924 value to match your system's total memory in KB
+
+Adjust progress bar width by changing the multiplier in bartotval calculation
+
+Edit the appcust array to track different processes
+
 Custom process groups can be modified in the script by editing the appcust array:
 ```bash
 appcust=("chrome" "discord" "python" "i3" "gvfs" "systemd" "at-spi" "vim")
@@ -70,11 +76,6 @@ Uses smem for accurate PSS memory information
 Processes with memory usage < 1024KB are grouped under "others"
 Progress bars scale according to total system memory (14.8GB default)
 Supports dynamic unit conversion based on memory size
-
-## 🛠️ Customization
-Modify 15518924 value to match your system's total memory in KB
-Adjust progress bar width by changing the multiplier in bartotval calculation
-Edit the appcust array to track different processes
 
 ## 🐛 Known Issues
 Requires sudo password for smem execution
