@@ -53,7 +53,7 @@ Run the script
 ```
 ## 📋 Output Format
 ```bash
-rocess_name : memory_usage unit percentage% [progress_bar]
+process_name : memory_usage unit percentage% [progress_bar]
 --------------------------------
 TOTAL : total_memory_usage unit percentage% [total_progress_bar]
 ```
