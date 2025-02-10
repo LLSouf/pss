@@ -1,0 +1,111 @@
+#!/bin/bash
+rm ~/.cache/pss_usage/mem_pss.list ~/.cache/pss_usage/mem_pss1.list ~/.cache/pss_usage/mem_pss2.list 2&> /dev/null
+
+mkdir ~/.cache/pss_usage 2&> /dev/null
+sudo -S smem -Htr -c "pss name" > ~/.cache/pss_usage/mem_pss
+
+allapp=$(cat ~/.cache/pss_usage/mem_pss | awk '{print $2}' | sort | uniq)
+
+
+appcust=("chrome" "discord" "python" "i3" "gvfs" "systemd" "at-spi" "vim")
+
+for ele in ${appcust[@]}
+do
+allapp=$(echo $allapp | sed -e "s/[^ ]*$ele[^ ]*//ig")
+done
+
+
+repeat(){
+	local start=1
+	local end=${1:-80}
+	local str="${2:-=}"
+	local range=$(seq $start $end)
+	for i in $range ; do echo -n "${str}"; done
+}
+
+kbtotal=$(cat ~/.cache/pss_usage/mem_pss | tail -1 | grep -o -E "[0-9]+")
+gbtotal=$(echo "scale=2;$kbtotal/1048576" | bc -l)
+perctot=$(echo "scale=2;$kbtotal*100/15518924" | bc -l)
+bartotval=$(($kbtotal*40/15518924))
+restotval=$((40-$bartotval))
+bartot=$(repeat $bartotval '/'; repeat $restotval '-' ;echo)
+
+function getpss {
+
+  key=$(echo $line | cut -d':' -f1 )
+  kb=$(echo $line | cut -d':' -f2- )
+  
+
+if [ -z "$kb" ]
+then return
+else barvalue=$(($kb*40/15518924)) && restbar=$((40-$barvalue)) && bar=$(repeat $barvalue '/';  repeat $restbar '-' ;echo -e) && perc=$(echo "scale=2;$kb*100/15518924" | bc -l)
+fi
+
+if [[ ${#kb} < 4  ]]
+then echo "$key : $kb Ki $perc% $bar"
+
+elif [[ ${#kb} < 7 ]]
+then mb=$(echo "scale=2;$kb/1024" | bc -l) && echo "$key : $mb Mi $perc% $bar"
+
+elif [[ ${#kb} > 6 ]]
+then gb=$(echo "scale=2;$kb/1048576" | bc -l) && echo "$key : $gb Gi $perc% $bar"
+
+fi
+}
+
+for name in ${allapp[@]}
+do 
+	sum=$(cat ~/.cache/pss_usage/mem_pss | grep "\b$name\b"  | awk '{print $1}' | awk '{total+=$1}END{print total}')
+        echo "$name:$sum" >> ~/.cache/pss_usage/mem_pss.list
+done
+
+for name in ${appcust[@]}
+do
+  	sum=$(cat ~/.cache/pss_usage/mem_pss | grep $name  | awk '{print $1}' | awk '{total+=$1}END{print total}')
+	echo "$name:$sum" >> ~/.cache/pss_usage/mem_pss.list
+done
+
+
+# Initialize sum variable
+sum=0
+
+# Read the file line by line
+while IFS= read -r line; do
+    # Extract the number after :
+    number=$(echo "$line" | grep -o -P '(?<=:)\d+')
+
+	# Check if the extracted number is not empty
+    if [[ -n "$number" && "$number" =~ ^[0-9]+$ ]]; then
+		# Check if the number is less than 1024
+		if [ "$number" -lt 1024 ]; then
+			# Add the number to the sum
+			sum=$((sum + number))
+			# Delete the line from the file
+			sed -i "/$line/d" ~/.cache/pss_usage/mem_pss.list
+		fi
+	fi
+done < /home/soufiane/.cache/pss_usage/mem_pss.list
+
+# Append a new line with the sum of deleted numbers
+echo "others:$sum" >> ~/.cache/pss_usage/mem_pss.list
+
+
+cat ~/.cache/pss_usage/mem_pss.list | sort -k2n -t":" > ~/.cache/pss_usage/mem_pss1.list
+
+echo
+for line in $(cat ~/.cache/pss_usage/mem_pss1.list)
+do
+
+  getpss >> ~/.cache/pss_usage/mem_pss2.list
+
+done
+echo "---------------- -" >> ~/.cache/pss_usage/mem_pss2.list
+echo -e "TOTAL : ${gbtotal} Gi $perctot% $bartot">> ~/.cache/pss_usage/mem_pss2.list
+echo -e "---------------- - /14.8" >> ~/.cache/pss_usage/mem_pss2.list
+cat ~/.cache/pss_usage/mem_pss2.list | column -t -R 3,5 -c 20
+
+
+
+
+
+
