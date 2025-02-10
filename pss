@@ -84,7 +84,7 @@ while IFS= read -r line; do
 			sed -i "/$line/d" ~/.cache/pss_usage/mem_pss.list
 		fi
 	fi
-done < /home/soufiane/.cache/pss_usage/mem_pss.list
+done < ~/.cache/pss_usage/mem_pss.list
 
 # Append a new line with the sum of deleted numbers
 echo "others:$sum" >> ~/.cache/pss_usage/mem_pss.list
